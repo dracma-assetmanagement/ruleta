@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Decisiones — Fin Silver</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg: #f0f0f0;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #888888;
+            --accent: #555555;
+            --accent-hover: #333333;
+            --border: #e0e0e0;
+            --shadow: 0 2px 20px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* HEADER */
+        header {
+            width: 100%;
+            padding: 28px 0;
+            text-align: center;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        header .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 22px;
+            letter-spacing: 6px;
+            line-height: 1.15;
+        }
+
+        .logo .fin { color: var(--text); font-weight: 700; }
+        .logo .silver { color: var(--text-light); font-weight: 400; }
+
+        /* MAIN */
+        main {
+            width: 100%;
+            max-width: 520px;
+            padding: 40px 20px 60px;
+            flex: 1;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 42px;
+            font-weight: 400;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 300;
+            margin-bottom: 36px;
+        }
+
+        /* OPTIONS CARD */
+        .options-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+        }
+
+        .field-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .add-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .add-row input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #fafafa;
+            transition: border-color 0.25s ease;
+        }
+
+        .add-row input:focus {
+            outline: none;
+            border-color: var(--text);
+            background: #fff;
+        }
+
+        .add-row input::placeholder {
+            color: #ccc;
+        }
+
+        .btn-add {
+            padding: 12px 20px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-add:hover { background: var(--accent-hover); }
+
+        .options-list {
+            list-style: none;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .options-list::-webkit-scrollbar { width: 4px; }
+        .options-list::-webkit-scrollbar-track { background: transparent; }
+        .options-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            animation: slideIn 0.3s ease;
+        }
+
+        .option-item:last-child { border-bottom: none; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .option-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .option-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .option-remove {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .option-remove:hover {
+            background: #f5f5f5;
+            color: #c0392b;
+        }
+
+        .options-count {
+            font-size: 11px;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        /* WHEEL CARD */
+        .wheel-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 28px;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 28px solid var(--text);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        canvas#wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1), inset 0 0 0 4px var(--border);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--card);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-center-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--text);
+        }
+
+        .btn-spin {
+            padding: 16px 56px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--text);
+            color: #fff;
+            transition: all 0.25s ease;
+        }
+
+        .btn-spin:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .btn-spin:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-spin.spinning {
+            background: var(--accent);
+        }
+
+        .min-warning {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 12px;
+        }
+
+        /* RESULT OVERLAY */
+        .result-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        .result-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-modal {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .result-winner {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 52px;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .result-color-bar {
+            width: 60px;
+            height: 4px;
+            border-radius: 2px;
+            margin: 0 auto 24px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-result {
+            padding: 12px 24px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-result-primary {
+            background: var(--text);
+            color: #fff;
+        }
+
+        .btn-result-primary:hover { background: #000; }
+
+        .btn-result-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-result-secondary:hover { border-color: var(--text); }
+
+        /* HISTORY CARD */
+        .history-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .history-toggle {
+            width: 100%;
+            padding: 18px 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .history-toggle svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .history-toggle.open svg { transform: rotate(180deg); }
+
+        .history-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .history-body.open { max-height: 600px; }
+
+        .history-list {
+            padding: 0 32px 20px;
+            list-style: none;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-item:last-child { border-bottom: none; }
+
+        .history-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            color: var(--text-light);
+            width: 28px;
+        }
+
+        .history-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            padding-left: 8px;
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .history-empty {
+            padding: 20px 32px;
+            font-size: 13px;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* DOWNLOAD BTN */
+        .btn-download {
+            width: 100%;
+            padding: 16px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: transparent;
+            color: var(--text);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-download.visible { display: flex; }
+        .btn-download:hover { border-color: var(--text); }
+        .btn-download svg { width: 16px; height: 16px; }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            z-index: 1100;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+
+        .notification.show { top: 24px; }
+
+        /* FOOTER */
+        footer {
+            width: 100%;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        footer strong { color: var(--text); font-weight: 600; }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            main { padding: 28px 16px 40px; }
+            h1 { font-size: 34px; }
+            .wheel-container { width: 260px; height: 260px; }
+            canvas#wheel { width: 260px; height: 260px; }
+            .options-card, .wheel-card { padding: 24px 20px; }
+            .result-winner { font-size: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><span class="fin">FIN</span><br><span class="silver">SILVER</span></div>
+    </header>
+
+    <div class="notification" id="notification"></div>
+
+    <!-- RESULT OVERLAY -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-modal">
+            <div class="result-label">La ruleta eligió</div>
+            <div class="result-winner" id="resultWinner"></div>
+            <div class="result-color-bar" id="resultColorBar"></div>
+            <div class="result-actions">
+                <button class="btn-result btn-result-primary" onclick="closeResult(); spinWheel();">Girar de nuevo</button>
+                <button class="btn-result btn-result-secondary" onclick="closeResult()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <h1>Ruleta de Decisiones</h1>
+        <p class="subtitle">Agregá opciones, girá la ruleta y dejá que el azar decida</p>
+
+        <!-- OPTIONS -->
+        <div class="options-card">
+            <div class="field-label">Opciones</div>
+            <div class="add-row">
+                <input type="text" id="optionInput" placeholder="Escribí una opción..." maxlength="40">
+                <button class="btn-add" onclick="addOption()">Agregar</button>
+            </div>
+            <ul class="options-list" id="optionsList"></ul>
+            <div class="options-count" id="optionsCount"></div>
+        </div>
+
+        <!-- WHEEL -->
+        <div class="wheel-card">
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <canvas id="wheel" width="600" height="600"></canvas>
+                <div class="wheel-center">
+                    <div class="wheel-center-dot"></div>
+                </div>
+            </div>
+            <button class="btn-spin" id="btnSpin" onclick="spinWheel()" disabled>Girar</button>
+            <div class="min-warning" id="minWarning">Agregá al menos 2 opciones para girar</div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="history-card">
+            <button class="history-toggle" id="historyToggle" onclick="toggleHistory()">
+                Historial de resultados
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="history-body" id="historyBody">
+                <div class="history-empty" id="historyEmpty">Todavía no giraste la ruleta</div>
+                <ul class="history-list" id="historyList"></ul>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD -->
+        <button class="btn-download" id="btnDownload" onclick="downloadPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Descargar historial en PDF
+        </button>
+    </main>
+
+    <footer>
+        Grupo <strong>Fin-Silver</strong>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // ========== STATE ==========
+        const COLORS = [
+            '#1a1a1a', '#555555', '#888888', '#b0b0b0',
+            '#3a3a3a', '#6b6b6b', '#9a9a9a', '#c5c5c5',
+            '#2c2c2c', '#4d4d4d', '#777777', '#a3a3a3',
+            '#333333', '#5e5e5e', '#808080', '#bdbdbd',
+            '#454545', '#737373', '#929292', '#d0d0d0',
+            '#1f1f1f', '#484848', '#686868', '#a8a8a8',
+            '#383838', '#5a5a5a', '#8e8e8e', '#c0c0c0',
+            '#262626', '#525252', '#7a7a7a', '#b5b5b5',
+            '#404040', '#636363', '#959595', '#cccccc',
+            '#2f2f2f', '#4a4a4a', '#858585', '#ababab'
+        ];
+
+        let options = [];
+        let history = [];
+        let spinning = false;
+        let currentAngle = 0;
+
+        // ========== OPTIONS ==========
+        function addOption() {
+            const input = document.getElementById('optionInput');
+            const val = input.value.trim();
+            if (!val) return;
+            if (options.length >= 40) {
+                showNotification('Máximo 40 opciones');
+                return;
+            }
+            if (options.find(o => o.name.toLowerCase() === val.toLowerCase())) {
+                showNotification('Esa opción ya existe');
+                return;
+            }
+
+            options.push({
+                name: val,
+                color: COLORS[options.length % COLORS.length]
+            });
+
+            input.value = '';
+            input.focus();
+            renderOptions();
+            drawWheel();
+            updateSpinButton();
+        }
+
+        function removeOption(index) {
+            options.splice(index, 1);
+            // Reassign colors
+            options.forEach((o, i) => o.color = COLORS[i % COLORS.length]);
+            renderOptions();
+            drawWheel();
+            updateSpinButton();
+        }
+
+        function renderOptions() {
+            const list = document.getElementById('optionsList');
+            const count = document.getElementById('optionsCount');
+
+            if (options.length === 0) {
+                list.innerHTML = '';
+                count.textContent = '';
+                return;
+            }
+
+            list.innerHTML = options.map((o, i) => `
+                <li class="option-item">
+                    <div class="option-color" style="background:${o.color}"></div>
+                    <span class="option-name">${escapeHtml(o.name)}</span>
+                    <button class="option-remove" onclick="removeOption(${i})" title="Eliminar">×</button>
+                </li>
+            `).join('');
+
+            count.textContent = options.length + ' opcion' + (options.length !== 1 ? 'es' : '');
+        }
+
+        function updateSpinButton() {
+            const btn = document.getElementById('btnSpin');
+            const warning = document.getElementById('minWarning');
+            if (options.length >= 2) {
+                btn.disabled = false;
+                warning.style.display = 'none';
+            } else {
+                btn.disabled = true;
+                warning.style.display = 'block';
+            }
+        }
+
+        // ========== WHEEL DRAWING ==========
+        function drawWheel() {
+            const canvas = document.getElementById('wheel');
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const center = size / 2;
+            const radius = center - 4;
+
+            ctx.clearRect(0, 0, size, size);
+
+            if (options.length === 0) {
+                // Empty state
+                ctx.beginPath();
+                ctx.arc(center, center, radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#f5f5f5';
+                ctx.fill();
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = '#ccc';
+                ctx.font = '500 20px Work Sans';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Agregá opciones', center, center);
+                return;
+            }
+
+            const sliceAngle = (Math.PI * 2) / options.length;
+
+            options.forEach((opt, i) => {
+                const startAngle = currentAngle + i * sliceAngle;
+                const endAngle = startAngle + sliceAngle;
+
+                // Slice
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = opt.color;
+                ctx.fill();
+
+                // Border
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Text
+                ctx.save();
+                ctx.translate(center, center);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                const textRadius = radius * 0.62;
+                const name = opt.name.length > 14 ? opt.name.slice(0, 12) + '...' : opt.name;
+
+                // Determine text color for contrast
+                const brightness = getBrightness(opt.color);
+                ctx.fillStyle = brightness < 128 ? '#ffffff' : '#1a1a1a';
+                ctx.font = `600 ${options.length > 20 ? 11 : options.length > 14 ? 13 : options.length > 8 ? 16 : options.length > 5 ? 20 : 24}px Work Sans`;
+                ctx.fillText(name, textRadius, 0);
+                ctx.restore();
+            });
+
+            // Outer ring
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        function getBrightness(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        // ========== SPIN ==========
+        function spinWheel() {
+            if (spinning || options.length < 2) return;
+            spinning = true;
+
+            const btn = document.getElementById('btnSpin');
+            btn.disabled = true;
+            btn.classList.add('spinning');
+            btn.textContent = 'Girando...';
+
+            // Random: 5-8 full rotations + random final position
+            const extraRotations = (5 + Math.random() * 3) * Math.PI * 2;
+            const randomAngle = Math.random() * Math.PI * 2;
+            const targetAngle = currentAngle + extraRotations + randomAngle;
+
+            const duration = 4000 + Math.random() * 1000;
+            const startTime = performance.now();
+            const startAngle = currentAngle;
+
+            function animate(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                currentAngle = startAngle + (targetAngle - startAngle) * eased;
+
+                drawWheel();
+
+                // Tick sound effect at each segment boundary
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    btn.disabled = false;
+                    btn.classList.remove('spinning');
+                    btn.textContent = 'Girar';
+
+                    // Determine winner
+                    const sliceAngle = (Math.PI * 2) / options.length;
+                    // The pointer is at the top (270deg = -PI/2)
+                    let normalizedAngle = ((-currentAngle - Math.PI / 2) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                    let winnerIndex = Math.floor(normalizedAngle / sliceAngle);
+                    winnerIndex = winnerIndex % options.length;
+
+                    const winner = options[winnerIndex];
+                    showResult(winner);
+                    addToHistory(winner);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // ========== RESULT ==========
+        function showResult(winner) {
+            document.getElementById('resultWinner').textContent = winner.name;
+            document.getElementById('resultColorBar').style.background = winner.color;
+            document.getElementById('resultOverlay').classList.add('show');
+        }
+
+        function closeResult() {
+            document.getElementById('resultOverlay').classList.remove('show');
+        }
+
+        // ========== HISTORY ==========
+        function addToHistory(winner) {
+            const now = new Date();
+            const time = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+            history.unshift({
+                name: winner.name,
+                color: winner.color,
+                time: time
+            });
+
+            if (history.length > 20) history.pop();
+
+            renderHistory();
+            document.getElementById('btnDownload').classList.add('visible');
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const empty = document.getElementById('historyEmpty');
+
+            if (history.length === 0) {
+                empty.style.display = 'block';
+                list.innerHTML = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = history.map((h, i) => `
+                <li class="history-item">
+                    <span class="history-number">${i + 1}</span>
+                    <span class="history-name">${escapeHtml(h.name)}</span>
+                    <span class="history-time">${h.time}</span>
+                </li>
+            `).join('');
+        }
+
+        function toggleHistory() {
+            document.getElementById('historyBody').classList.toggle('open');
+            document.getElementById('historyToggle').classList.toggle('open');
+        }
+
+        // ========== PDF ==========
+        function downloadPDF() {
+            if (history.length === 0) {
+                showNotification('No hay resultados para descargar');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const W = 210;
+            const margin = 24;
+            const contentW = W - margin * 2;
+            let y = 20;
+
+            const black = [26, 26, 26];
+            const grayC = [136, 136, 136];
+            const lightGray = [224, 224, 224];
+            const bgGray = [240, 240, 240];
+            const white = [255, 255, 255];
+
+            function centerText(text, yPos, size, color, style) {
+                doc.setFontSize(size);
+                doc.setTextColor(...color);
+                doc.setFont('helvetica', style || 'normal');
+                doc.text(text, W / 2, yPos, { align: 'center' });
+            }
+
+            function roundedRect(x, yR, w, h, r, fillColor) {
+                doc.setFillColor(...fillColor);
+                doc.roundedRect(x, yR, w, h, r, r, 'F');
+            }
+
+            function hLine(x1, yL, x2, color) {
+                doc.setDrawColor(...color);
+                doc.setLineWidth(0.3);
+                doc.line(x1, yL, x2, yL);
+            }
+
+            // Background
+            doc.setFillColor(...bgGray);
+            doc.rect(0, 0, W, 297, 'F');
+
+            // Header
+            centerText('FIN', y, 16, black, 'bold');
+            y += 5;
+            centerText('SILVER', y, 16, grayC, 'normal');
+            y += 12;
+            centerText('RULETA DE DECISIONES', y, 22, black, 'bold');
+            y += 7;
+            const dateStr = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+            centerText('Historial del ' + dateStr, y, 9, grayC, 'normal');
+            y += 5;
+            hLine(margin, y, W - margin, lightGray);
+            y += 10;
+
+            // Options used
+            centerText('OPCIONES EN LA RULETA', y, 8, grayC, 'normal');
+            y += 6;
+            const optNames = options.map(o => o.name).join('  •  ');
+            doc.setFontSize(10);
+            doc.setTextColor(...black);
+            doc.setFont('helvetica', 'normal');
+            const splitOpts = doc.splitTextToSize(optNames, contentW - 20);
+            doc.text(splitOpts, W / 2, y, { align: 'center' });
+            y += splitOpts.length * 5 + 8;
+
+            // Results card
+            const resultsH = 14 + history.length * 10 + 4;
+            roundedRect(margin, y, contentW, Math.min(resultsH, 240), 3, white);
+
+            doc.setFontSize(7);
+            doc.setTextColor(...grayC);
+            doc.setFont('helvetica', 'normal');
+            doc.text('RESULTADOS', margin + 12, y + 9);
+
+            let rY = y + 18;
+            history.forEach((h, i) => {
+                if (rY > 270) {
+                    doc.addPage();
+                    doc.setFillColor(...bgGray);
+                    doc.rect(0, 0, W, 297, 'F');
+                    rY = 20;
+                }
+
+                doc.setFontSize(14);
+                doc.setTextColor(...grayC);
+                doc.setFont('helvetica', 'bold');
+                doc.text(String(i + 1), margin + 14, rY);
+
+                doc.setFontSize(11);
+                doc.setTextColor(...black);
+                doc.setFont('helvetica', 'bold');
+                doc.text(h.name, margin + 26, rY);
+
+                doc.setFontSize(9);
+                doc.setTextColor(...grayC);
+                doc.setFont('helvetica', 'normal');
+                doc.text(h.time, W - margin - 12, rY, { align: 'right' });
+
+                if (i < history.length - 1) {
+                    hLine(margin + 10, rY + 3.5, W - margin - 10, [238, 238, 238]);
+                }
+                rY += 10;
+            });
+
+            y = rY + 15;
+
+            // Footer
+            if (y > 275) {
+                doc.addPage();
+                doc.setFillColor(...bgGray);
+                doc.rect(0, 0, W, 297, 'F');
+                y = 20;
+            }
+            hLine(margin, y, W - margin, lightGray);
+            y += 8;
+            doc.setFontSize(7);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...grayC);
+            const ft = 'GRUPO ';
+            const fb = 'FIN-SILVER';
+            doc.text(ft, W / 2 - doc.getTextWidth(fb) / 2 - doc.getTextWidth(ft) + 1, y);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...black);
+            doc.text(fb, W / 2 - doc.getTextWidth(fb) / 2 + doc.getTextWidth(ft), y);
+
+            doc.save('ruleta-decisiones-finsilver.pdf');
+            showNotification('PDF descargado correctamente');
+        }
+
+        // ========== UTILS ==========
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showNotification(message) {
+            const el = document.getElementById('notification');
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        // Enter to add option
+        document.getElementById('optionInput').addEventListener('keydown', (e) => {
+            if (e.code === 'Enter') addOption();
+        });
+
+        // Escape to close result
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape') closeResult();
+            if (e.code === 'Space' && !spinning && options.length >= 2 && !document.getElementById('resultOverlay').classList.contains('show') && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                spinWheel();
+            }
+        });
+
+        // Init
+        drawWheel();
+        updateSpinButton();
+    </script>
+</body>
+</html>
